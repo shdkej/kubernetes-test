@@ -23,6 +23,8 @@ resource "null_resource" "k3s-node-provisioner" {
   provisioner "remote-exec" {
     inline = [
         "sudo apt-get update && sudo apt-get install -y git ansible",
+        "export K3S-MASTER=${aws_instance.k3s-master.public_ip}",
+        "export K3S-TOKEN=${file(../k3s-setup/join-command)}",
         "git clone https://github.com/shdkej/kubernetes-test",
         "ansible-playbook -c local -i 127.0.0.1, kubernetes-test/k3s-setup/node-playbook.yml",
     ]

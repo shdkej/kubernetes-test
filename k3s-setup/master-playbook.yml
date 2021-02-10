@@ -69,7 +69,9 @@
     shell: /tmp/k3s.sh
 
   - name: Remove k3s script file
-    file: path=/tmp/k3s.sh state=absent
+    file:
+      path: /tmp/k3s.sh
+      state: absent
 
   - name: Enable and check K3S Service
     systemd:

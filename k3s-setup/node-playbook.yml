@@ -80,7 +80,8 @@
   #    file: path=/tmp/k3s.sh state=absent
 
   - name: Install K3S
-    shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ master_ip.stdout_lines[0] }}:6443 K3S_TOKEN={{ join_command.stdout_lines[0] }} sh -
+    shell: curl -sfL https://get.k3s.io | K3S_URL=https://$K3S-MASTER:6443 $K3S_TOKEN=K3S-TOKEN sh -
+  #  shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ master_ip.stdout_lines[0] }}:6443 K3S_TOKEN={{ join_command.stdout_lines[0] }} sh -
 
   - name: Enable and check K3S Service
     systemd:

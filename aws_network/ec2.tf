@@ -49,6 +49,7 @@ resource "null_resource" "k3s-master-provisioner" {
   provisioner "remote-exec" {
     inline = [
         "sudo apt-get update && sudo apt-get install -y git ansible",
+        "rm -rf kubernetes-test",
         "git clone https://github.com/shdkej/kubernetes-test",
         "ansible-playbook -c local -i 127.0.0.1, kubernetes-test/k3s-setup/master-playbook.yml",
     ]
