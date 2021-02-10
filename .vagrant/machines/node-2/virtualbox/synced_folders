@@ -1,1 +1,1 @@
-{"virtualbox":{"/vagrant":{"guestpath":"/vagrant","hostpath":"/home/sh/workspace/kubernetes_ansible","disabled":false,"__vagrantfile":true}}}
+{"virtualbox":{"/vagrant":{"guestpath":"/vagrant","hostpath":"/home/sh/workspace/kubernetes-test","disabled":false,"__vagrantfile":true}}}
