@@ -104,8 +104,10 @@
   - name: Send Item
     command: "{{ item }}"
     with_items:
-      - yes | scp -i ~/.ssh/aws-k3s ./join-command ubuntu@{{ node_ip.stdout_lines[0] }}:/join-command
-      - yes | scp -i ~/.ssh/aws-k3s ./join-command ubuntu@{{ node_ip.stdout_lines[1] }}:/join-command
+      - yes | scp -i ~/.ssh/aws-k3s ./master_ip ubuntu@{{ node_ip.stdout_lines[0] }}:/tmp/master_ip
+      - yes | scp -i ~/.ssh/aws-k3s ./master_ip ubuntu@{{ node_ip.stdout_lines[1] }}:/tmp/master_ip
+      - yes | scp -i ~/.ssh/aws-k3s ./join-command ubuntu@{{ node_ip.stdout_lines[0] }}:/tmp/join-command
+      - yes | scp -i ~/.ssh/aws-k3s ./join-command ubuntu@{{ node_ip.stdout_lines[1] }}:/tmp/join-command
 
   - name: Kubectl Permission Update
     file:
@@ -121,12 +123,6 @@
       - mv linux-amd64/helm /usr/local/bin/
       - rm helm-v3.2.1-linux-amd64.tar.gz
       - rm -rf linux-amd64
-
-  - name: run ansible
-    command: "{{ item }}"
-    with_items:
-      - ansible-playbook -c local -i "{{ node_ip.stdout_lines[0] }}", kubernetes-test/k3s-setup/node-playbook.yml
-      - ansible-playbook -c local -i "{{ node_ip.stdout_lines[1] }}", kubernetes-test/k3s-setup/node-playbook.yml
 
   handlers:
   - name: docker status
