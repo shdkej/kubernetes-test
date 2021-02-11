@@ -13,4 +13,4 @@
 
 ## Terraform Build
 - [ ] can't recognize eip in the first `terraform apply` command.
-
+- [ ] how to send join command to private network

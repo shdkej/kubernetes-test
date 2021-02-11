@@ -11,7 +11,7 @@ data "aws_ami" "ubuntu" {
   most_recent = true
   filter {
     name = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
   }
   filter {
     name = "virtualization-type"
@@ -33,7 +33,7 @@ resource "aws_instance" "k3s-master" {
 }
 
 resource "null_resource" "k3s-master-provisioner" {
-  depends_on = [aws_instance.k3s-master, aws_eip.k3s-master-eip]
+  depends_on = [aws_instance.k3s-master, aws_instance.k3s-node, aws_eip.k3s-master-eip, local_file.private_ip]
 
   triggers = {
     //build_number = timestamp()
@@ -46,10 +46,16 @@ resource "null_resource" "k3s-master-provisioner" {
   }
 */
 
+  provisioner "local-exec" {
+    command = <<EOF
+        yes | scp -i ~/.ssh/aws-k3s ~/.ssh/aws-k3s ubuntu@${aws_instance.k3s-master.public_ip}:/home/ubuntu/.ssh/aws-k3s
+        yes | scp -i ~/.ssh/aws-k3s ./k3s-setup/nodes ubuntu@${aws_instance.k3s-master.public_ip}:/home/ubuntu/nodes
+        EOF
+  }
+
   provisioner "remote-exec" {
     inline = [
-        "sudo apt-get update && sudo apt-get install -y git ansible",
-        "rm -rf kubernetes-test",
+        "sudo apt-get update && sudo apt install -y git ansible",
         "git clone https://github.com/shdkej/kubernetes-test",
         "ansible-playbook -c local -i 127.0.0.1, kubernetes-test/k3s-setup/master-playbook.yml",
     ]

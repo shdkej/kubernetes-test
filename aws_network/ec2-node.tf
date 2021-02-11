@@ -13,6 +13,7 @@ resource "aws_instance" "k3s-node" {
   depends_on = [aws_instance.k3s-master]
 }
 
+/*
 resource "null_resource" "k3s-node-provisioner" {
   count = 2
   depends_on = [aws_instance.k3s-node, null_resource.k3s-master-provisioner]
@@ -23,8 +24,6 @@ resource "null_resource" "k3s-node-provisioner" {
   provisioner "remote-exec" {
     inline = [
         "sudo apt-get update && sudo apt-get install -y git ansible",
-        "export K3S-MASTER=${aws_instance.k3s-master.public_ip}",
-        "export K3S-TOKEN=${file(../k3s-setup/join-command)}",
         "git clone https://github.com/shdkej/kubernetes-test",
         "ansible-playbook -c local -i 127.0.0.1, kubernetes-test/k3s-setup/node-playbook.yml",
     ]
@@ -38,14 +37,18 @@ resource "null_resource" "k3s-node-provisioner" {
   }
 }
 
-/*
 resource "aws_eip" "k3s-node-eip" {
   count = 2
   instance = aws_instance.k3s-node[count.index].id
   vpc = true
 }
+*/
 
 output "node-ip" {
-  value = aws_instance.k3s-node.*.public_ip
+  value = aws_instance.k3s-node.*.private_ip
 }
-*/
+
+resource "local_file" "private_ip" {
+  content = join("\n", aws_instance.k3s-node.*.private_ip)
+  filename = "k3s-setup/nodes"
+}
