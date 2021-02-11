@@ -101,14 +101,6 @@
     shell: cat /home/ubuntu/nodes
     register: node_ip
 
-  - name: Send Item
-    command: "{{ item }}"
-    with_items:
-      - yes | scp -i ~/.ssh/aws-k3s ./master_ip ubuntu@{{ node_ip.stdout_lines[0] }}:/tmp/master_ip
-      - yes | scp -i ~/.ssh/aws-k3s ./master_ip ubuntu@{{ node_ip.stdout_lines[1] }}:/tmp/master_ip
-      - yes | scp -i ~/.ssh/aws-k3s ./join-command ubuntu@{{ node_ip.stdout_lines[0] }}:/tmp/join-command
-      - yes | scp -i ~/.ssh/aws-k3s ./join-command ubuntu@{{ node_ip.stdout_lines[1] }}:/tmp/join-command
-
   - name: Kubectl Permission Update
     file:
       path: /etc/rancher/k3s/k3s.yaml
