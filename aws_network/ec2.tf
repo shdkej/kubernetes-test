@@ -36,7 +36,7 @@ resource "null_resource" "k3s-master-provisioner" {
   depends_on = [aws_instance.k3s-master, aws_instance.k3s-node, aws_eip.k3s-master-eip, local_file.private_ip]
 
   triggers = {
-    //build_number = timestamp()
+    build_number = timestamp()
     public_ip = aws_instance.k3s-master.public_ip
   }
 
