@@ -48,8 +48,8 @@ resource "null_resource" "k3s-master-provisioner" {
 
   provisioner "local-exec" {
     command = <<EOF
-        yes | scp -i ~/.ssh/aws-k3s ~/.ssh/aws-k3s ubuntu@${aws_instance.k3s-master.public_ip}:/home/ubuntu/.ssh/aws-k3s
-        yes | scp -i ~/.ssh/aws-k3s ./k3s-setup/nodes ubuntu@${aws_instance.k3s-master.public_ip}:/home/ubuntu/nodes
+        scp -i ~/.ssh/aws-k3s -o "StrictHostKeyChecking no" ~/.ssh/aws-k3s ubuntu@${aws_instance.k3s-master.public_ip}:/home/ubuntu/.ssh/aws-k3s
+        scp -i ~/.ssh/aws-k3s -o "StrictHostKeyChecking no" ./k3s-setup/nodes ubuntu@${aws_instance.k3s-master.public_ip}:/home/ubuntu/nodes
         EOF
   }
 
@@ -59,8 +59,7 @@ resource "null_resource" "k3s-master-provisioner" {
         "rm -rf kubernetes-test",
         "git clone https://github.com/shdkej/kubernetes-test",
         "ansible-playbook -c local -i 127.0.0.1, kubernetes-test/k3s-setup/master-playbook.yml",
-        "ansible-playbook -i ${aws_instance.k3s-node[0].private_ip}, kubernetes-test/k3s-setup/node-playbook.yml",
-        "ansible-playbook -i ${aws_instance.k3s-node[1].private_ip}, kubernetes-test/k3s-setup/node-playbook.yml",
+        "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i nodes -u ubuntu --private-key ~/.ssh/aws-k3s kubernetes-test/k3s-setup/node-playbook.yml",
     ]
 
     connection {

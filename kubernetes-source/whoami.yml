@@ -15,3 +15,31 @@ spec:
       containers:
       - name: whoami-container
         image: containous/whoami
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: whoami-service
+spec:
+  ports:
+  - name: http
+    targetPort: 80
+    port: 80
+  selector:
+    app: whoami
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: whoami-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: whoami.localhost
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: whoami-service
+          servicePort: http
