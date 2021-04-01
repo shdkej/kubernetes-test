@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
 spec:
   rules:
-  - host: traefik-ui.minikube
+  - host: animals.minikube
     http:
       paths:
       - path: /
