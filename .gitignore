@@ -1,3 +1,5 @@
 join-command
 .vagrant
 .terraform
+variables.tf
+backend.hcl
