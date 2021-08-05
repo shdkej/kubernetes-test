@@ -1,4 +1,4 @@
-FROM python:3.6-alpine3.13
+FROM python:3.10.0rc1-alpine3.13
 
 RUN apk add --no-cache --virtual=build-deps build-base && \
                                  apk add --no-cache g++ && \
