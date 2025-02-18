@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-monkey
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kube-monkey
+  template:
+    metadata:
+      labels:
+        app: kube-monkey
+    spec:
+      containers:
+      - name: kube-monkey
+        image: ayushsobti/kube-monkey:v0.3.0
+        command:
+          - "/kube-monkey"
+        args: ["-v=5", "-log_dir=/var/log/kube-monkey"]
+        env:
+          - name: KUBE_MONKEY_ID
+            value: CLUSTER_A
+        volumeMounts:
+          - name: config-volume
+            mountPath: "/etc/kube-monkey"
+      volumes:
+        - name: config-volume
+          configMap:
+            name: kube-monkey-config-map
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kube-monkey-config-map
+  namespace: kube-system
+data:
+  config.toml: |
+    [kubemonkey]
+    run_hour = 8
+    start_hour = 10
+    end_hour = 16
+    blacklisted_namepsaces = ["kube-system"]
+    [debug]
+    enabled= true
+    schedule_immediate_kill= true

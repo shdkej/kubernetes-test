@@ -1,29 +1,24 @@
-module "vpc" {
-  source = "clouddrove/vpc/digitalocean"
-  version = "0.13.0"
-  name = "vpc"
-  application = "clouddrove"
-  environment = "test"
-  label_order = ["environment", "application", "name"]
-  enable_vpc = true
-  region = "bangalore-1"
+resource "digitalocean_vpc" "default" {
+  name = "kubernetes-vpc"
+  region = "sgp1"
 }
 
 resource "digitalocean_droplet" "master" {
   image = "ubuntu-18-04-x64"
   name = "kmaster"
   size = "s-1vcpu-2gb"
-  region = "blr1"
+  region = "sgp1"
   ssh_keys = [var.fingerprint]
   private_networking = true
   monitoring = false
-  vpc_uuid = module.vpc.id
+  vpc_uuid = digitalocean_vpc.default.id
 }
 
 resource "null_resource" "k3s-master-provisioner" {
   depends_on = [digitalocean_droplet.node, local_file.private_ip]
   triggers = {
     public_ip = digitalocean_droplet.master.ipv4_address
+    timestamp = digitalocean_droplet.master.ipv4_address
   }
 
   connection {
@@ -39,7 +34,7 @@ resource "null_resource" "k3s-master-provisioner" {
   }
 
   provisioner "file" {
-    source = "../k3s-setup/nodes"
+    source = "k3s-setup/nodes"
     destination = "/root/nodes"
   }
 

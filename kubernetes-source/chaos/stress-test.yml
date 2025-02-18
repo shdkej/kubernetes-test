@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stress-victim
+  labels:
+    kube-monkey/enabled: enabled
+    kube-monkey/identifier: stress-victim
+    kube-monkey/mtbf: '1'
+    kube-monkey/kill-mode: "kill-all"
+spec:
+  selector:
+    matchLabels:
+      run: stress-victim
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        run: stress-victim
+        kube-monkey/enabled: enabled
+        kube-monkey/identifier: stress-victim
+    spec:
+      containers:
+      - name: stress-victim
+        image: shdkej/stress-server:0.1.1
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 500m
+            memory: 200Mi
+          requests:
+            cpu: 200m
+            memory: 100Mi
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: stress-victim
+  labels:
+    run: stress-victim
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    run: stress-victim

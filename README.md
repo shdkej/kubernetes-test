@@ -2,7 +2,7 @@
 #### local test
 - `vagrant up`
 
-#### cloud test
+#### cloud test (aws free tier or else)
 - `terraform apply`
 
 ## 1. Stress Test
@@ -60,12 +60,21 @@ unavailable이 0인데 surge도 0이라면 10개의 파드가 있을 때 1개도
 - history
 - undo (--to-revision=2)
 
-## 4. Monitoring
+## 4. TLS
+- openssl
+    - `openssl req -x509 -newkey rsa:4096 -keyout key.key -out cert.crt`
+- secret
+    - `kubectl create secret tls test-tls --key key.key --cert cert.crt`
+- edit ingress yml
+    ```
+    spec:
+      tls:
+      - secretName: test-tls
+        hosts:
+        - host.com
+    ```
 
-## Troubleshooting
-#### Terraform Build
-- [ ] can't recognize eip in the first `terraform apply` command.
-- [ ] how to send join command to private network
+## 5. Monitoring
 
 ## More info
 https://shdkej.com/container

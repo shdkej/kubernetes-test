@@ -3,3 +3,4 @@ join-command
 .terraform
 variables.tf
 backend.hcl
+nodes
